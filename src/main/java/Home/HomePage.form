@@ -289,9 +289,6 @@
           </Layout>
           <SubComponents>
             <Container class="javax.swing.JPanel" name="ManageBooks">
-              <AuxValues>
-                <AuxValue name="JLayeredPane.layer" type="java.lang.Integer" value="4"/>
-              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
                   <AbsoluteConstraints x="0" y="0" width="-1" height="800"/>
@@ -482,12 +479,9 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="ManageUsers">
-              <AuxValues>
-                <AuxValue name="JLayeredPane.layer" type="java.lang.Integer" value="3"/>
-              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="0" y="0" width="750" height="-1"/>
+                  <AbsoluteConstraints x="0" y="0" width="750" height="800"/>
                 </Constraint>
               </Constraints>
 
@@ -669,9 +663,6 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="BorrowReturn">
-              <AuxValues>
-                <AuxValue name="JLayeredPane.layer" type="java.lang.Integer" value="2"/>
-              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
                   <AbsoluteConstraints x="0" y="0" width="750" height="800"/>
@@ -874,9 +865,6 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="Search">
-              <AuxValues>
-                <AuxValue name="JLayeredPane.layer" type="java.lang.Integer" value="1"/>
-              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
                   <AbsoluteConstraints x="0" y="0" width="750" height="800"/>

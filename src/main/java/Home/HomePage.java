@@ -366,7 +366,6 @@ public class HomePage extends javax.swing.JFrame {
         jLabel3.setText("Search here");
         ManageBooks.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(453, 241, -1, -1));
 
-        jLayeredPane1.setLayer(ManageBooks, 4);
         jLayeredPane1.add(ManageBooks, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 800));
 
         ManageUsers.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -496,8 +495,7 @@ public class HomePage extends javax.swing.JFrame {
         });
         ManageUsers.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 80, -1));
 
-        jLayeredPane1.setLayer(ManageUsers, 3);
-        jLayeredPane1.add(ManageUsers, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, -1));
+        jLayeredPane1.add(ManageUsers, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
 
         BorrowReturn.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -626,7 +624,6 @@ public class HomePage extends javax.swing.JFrame {
         jLabel6.setText("Search here");
         BorrowReturn.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(449, 241, -1, -1));
 
-        jLayeredPane1.setLayer(BorrowReturn, 2);
         jLayeredPane1.add(BorrowReturn, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
 
         Search.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -663,7 +660,6 @@ public class HomePage extends javax.swing.JFrame {
 
         Search.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1562, 186));
 
-        jLayeredPane1.setLayer(Search, 1);
         jLayeredPane1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
 
         jPanel1.add(jLayeredPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 0, 750, -1));
