@@ -18,6 +18,7 @@ public class LoginPage extends javax.swing.JFrame {
     public LoginPage() {
         initComponents();
         this.setResizable(false);
+        setTitle("Login");
     }
 
     /**

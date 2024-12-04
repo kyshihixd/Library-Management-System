@@ -18,6 +18,7 @@ public class SignUp extends javax.swing.JFrame {
     public SignUp() {
         initComponents();
         this.setResizable(false);
+        setTitle("Sign Up");
     }
 
     /**

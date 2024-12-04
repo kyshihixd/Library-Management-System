@@ -7,7 +7,8 @@ package Home;
 import java.awt.Color;
 import java.sql.Statement;
 import javax.swing.JPanel;
-import Home.Add;
+import Home.AddBooks;
+import java.sql.*;
 
 import login.Login;
 /**
@@ -279,7 +280,7 @@ public class HomePage extends javax.swing.JFrame {
                 MBDeleteActionPerformed(evt);
             }
         });
-        ManageBooks.add(MBDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 238, 84, -1));
+        ManageBooks.add(MBDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 238, 90, -1));
 
         MBAddbook.setText("Add Book");
         MBAddbook.addActionListener(new java.awt.event.ActionListener() {
@@ -296,7 +297,7 @@ public class HomePage extends javax.swing.JFrame {
             }
         });
         ManageBooks.add(MBUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 238, 81, -1));
-        ManageBooks.add(MBSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 238, 185, -1));
+        ManageBooks.add(MBSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 240, 185, -1));
 
         MBTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -354,11 +355,23 @@ public class HomePage extends javax.swing.JFrame {
             new String [] {
                 "", "Title", "Author", "Genre", "ISBN", "Total copies", "Available"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane3.setViewportView(MBTable);
         if (MBTable.getColumnModel().getColumnCount() > 0) {
             MBTable.getColumnModel().getColumn(0).setResizable(false);
             MBTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+            MBTable.getColumnModel().getColumn(1).setResizable(false);
+            MBTable.getColumnModel().getColumn(2).setResizable(false);
+            MBTable.getColumnModel().getColumn(3).setResizable(false);
+            MBTable.getColumnModel().getColumn(4).setResizable(false);
         }
 
         ManageBooks.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
@@ -366,6 +379,7 @@ public class HomePage extends javax.swing.JFrame {
         jLabel3.setText("Search here");
         ManageBooks.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(453, 241, -1, -1));
 
+        jLayeredPane1.setLayer(ManageBooks, 4);
         jLayeredPane1.add(ManageBooks, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 800));
 
         ManageUsers.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -408,7 +422,7 @@ public class HomePage extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
-        ManageUsers.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(124, 238, 83, -1));
+        ManageUsers.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 238, 83, -1));
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -479,13 +493,14 @@ public class HomePage extends javax.swing.JFrame {
         ManageUsers.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 241, -1, -1));
 
         jButton5.setText("Delete");
+        jButton5.setMargin(new java.awt.Insets(2, 14, 3, 15));
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
             }
         });
-        ManageUsers.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(225, 238, 84, -1));
-        ManageUsers.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(526, 238, 185, -1));
+        ManageUsers.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(234, 238, 84, -1));
+        ManageUsers.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 170, -1));
 
         jButton6.setText("Add User");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -493,9 +508,10 @@ public class HomePage extends javax.swing.JFrame {
                 jButton6ActionPerformed(evt);
             }
         });
-        ManageUsers.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 80, -1));
+        ManageUsers.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 90, -1));
 
-        jLayeredPane1.add(ManageUsers, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
+        jLayeredPane1.setLayer(ManageUsers, 3);
+        jLayeredPane1.add(ManageUsers, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, -1));
 
         BorrowReturn.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -537,16 +553,17 @@ public class HomePage extends javax.swing.JFrame {
                 jButton7ActionPerformed(evt);
             }
         });
-        BorrowReturn.add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(247, 238, 118, -1));
-        BorrowReturn.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(516, 238, 185, -1));
+        BorrowReturn.add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(275, 238, 118, -1));
+        BorrowReturn.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 160, -1));
 
         jButton8.setText("Borrow Books");
+        jButton8.setPreferredSize(new java.awt.Dimension(110, 23));
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
             }
         });
-        BorrowReturn.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 118, -1));
+        BorrowReturn.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 130, -1));
 
         jButton9.setText("Update");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
@@ -554,7 +571,7 @@ public class HomePage extends javax.swing.JFrame {
                 jButton9ActionPerformed(evt);
             }
         });
-        BorrowReturn.add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(152, 238, 83, -1));
+        BorrowReturn.add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 238, 83, -1));
 
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -624,6 +641,7 @@ public class HomePage extends javax.swing.JFrame {
         jLabel6.setText("Search here");
         BorrowReturn.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(449, 241, -1, -1));
 
+        jLayeredPane1.setLayer(BorrowReturn, 2);
         jLayeredPane1.add(BorrowReturn, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
 
         Search.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -660,6 +678,7 @@ public class HomePage extends javax.swing.JFrame {
 
         Search.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1562, 186));
 
+        jLayeredPane1.setLayer(Search, 1);
         jLayeredPane1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
 
         jPanel1.add(jLayeredPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 0, 750, -1));
@@ -756,7 +775,7 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void MBAddbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBAddbookActionPerformed
-        Add obj = new Add();
+        AddBooks obj = new AddBooks();
         obj.show();
     }//GEN-LAST:event_MBAddbookActionPerformed
     
@@ -798,7 +817,6 @@ public class HomePage extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -806,6 +824,22 @@ public class HomePage extends javax.swing.JFrame {
                 home.setVisible(true);
             }
         });
+        String url="jdbc:mysql://localhost:3306/sys";
+        String user="root";
+        String password="12345678";
+        
+        try{
+            
+            Connection connection = DriverManager.getConnection(url, user, password);
+            Statement statement = connection.createStatement();
+        }
+        
+            catch (SQLException throwables) {
+            throwables.printStackTrace();}
+        
+
+        
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

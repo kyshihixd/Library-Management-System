@@ -1,7 +1,8 @@
 Home\HomePage$12.class
 Home\HomePage$3.class
 test\NewJFrame$2.class
-Home\Add$1.class
+Home\AddBooks.class
+Utility\ConnectionDB.class
 login\SignUp$2.class
 login\LoginPage$3.class
 Home\HomePage$8.class
@@ -10,8 +11,10 @@ login\SignUp$4.class
 login\LoginPage$1.class
 login\LoginPage.class
 Home\HomePage$7.class
+Utility\Utility.class
 Home\HomePage$14.class
 Home\HomePage$5.class
+Home\AddBooks$2.class
 Home\HomePage.class
 Home\HomePage$2.class
 Home\HomePage$11.class
@@ -25,7 +28,7 @@ login\SignUp$1.class
 Home\HomePage$4.class
 Home\HomePage$13.class
 Home\HomePage$6.class
-Home\Add.class
+Home\HomePage$15.class
 login\LoginPage$2.class
 login\SignUp$3.class
 login\SignUp.class
@@ -33,3 +36,4 @@ Home\HomePage$10.class
 Home\HomePage$1.class
 login\SignUp$5.class
 test\NewJFrame$1.class
+Home\AddBooks$1.class
