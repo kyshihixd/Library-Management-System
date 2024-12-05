@@ -9,6 +9,12 @@ import java.sql.Statement;
 import javax.swing.JPanel;
 import Home.AddBooks;
 import java.sql.*;
+import Utility.TableActionCellRender;
+import Utility.TableActionCellEditor;
+import Utility.TableActionEvent;
+import java.util.Vector;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import login.Login;
 /**
@@ -22,6 +28,73 @@ public class HomePage extends javax.swing.JFrame {
      */
     public HomePage() {
         initComponents();
+        TableActionEvent event1 = new TableActionEvent(){
+            public void onEdit(int row){
+                System.out.println("Edit "+ row);
+            }
+    
+            public void onDelete(int row){
+                System.out.println("Delete  "+ row);
+            }
+            
+            public void onView(int row){
+                System.out.println("View  "+ row);
+            }
+        };
+        MBTable.getColumnModel().getColumn(5).setCellRenderer(new TableActionCellRender());
+        MBTable.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event1));
+        
+        
+        TableActionEvent event2 = new TableActionEvent(){
+            public void onEdit(int row){
+                System.out.println("Edit "+ row);
+            }
+    
+            public void onDelete(int row){
+                System.out.println("Delete  "+ row);
+            }
+            
+            public void onView(int row){
+                System.out.println("View  "+ row);
+            }
+        };
+        
+        MUTable.getColumnModel().getColumn(4).setCellRenderer(new TableActionCellRender());
+        MUTable.getColumnModel().getColumn(4).setCellEditor(new TableActionCellEditor(event2));
+        
+        
+        TableActionEvent event3 = new TableActionEvent(){
+            public void onEdit(int row){
+                System.out.println("Edit "+ row);
+            }
+    
+            public void onDelete(int row){
+                System.out.println("Delete  "+ row);
+            }
+            
+            public void onView(int row){
+                System.out.println("View  "+ row);
+            }
+        };
+        
+        BRBTable.getColumnModel().getColumn(6).setCellRenderer(new TableActionCellRender());
+        BRBTable.getColumnModel().getColumn(6).setCellEditor(new TableActionCellEditor(event3));
+        
+        Object[] row1 = {4, "The Hobbit", "J.R.R. Tolkien",  2, 1};
+        DefaultTableModel dt = (DefaultTableModel)MBTable.getModel();
+        dt.addRow(row1);
+        
+        /*
+        Object[] row1 = {1, "The Great Gatsby", "F. Scott Fitzgerald", "Fiction", "9780743273565", 5, 3};
+        Object[] row2 = {2, "1984", "George Orwell", "Dystopian", "9780451524935", 3, 3};
+        Object[] row3 = {3, "To Kill a Mockingbird", "Harper Lee", "Fiction", "9780060935467", 4, 2};
+        Object[] row4 = {4, "The Hobbit", "J.R.R. Tolkien", "Fantasy", "9780547928227", 2, 1};
+        DefaultTableModel dt = (DefaultTableModel)MBTable.getModel();
+        dt.addRow(row1);
+        dt.addRow(row2);
+        dt.addRow(row3);
+        dt.addRow(row1);
+        */
     }
 
     /**
@@ -61,7 +134,7 @@ public class HomePage extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        MUTable = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
         jTextField2 = new javax.swing.JTextField();
@@ -74,7 +147,7 @@ public class HomePage extends javax.swing.JFrame {
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        BRBTable = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
         Search = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -301,77 +374,35 @@ public class HomePage extends javax.swing.JFrame {
 
         MBTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+
             },
             new String [] {
-                "", "Title", "Author", "Genre", "ISBN", "Total copies", "Available"
+                "", "Title", "Author", "Total copies", "Available", "Action"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        MBTable.setRowHeight(40);
         jScrollPane3.setViewportView(MBTable);
         if (MBTable.getColumnModel().getColumnCount() > 0) {
-            MBTable.getColumnModel().getColumn(0).setResizable(false);
-            MBTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+            MBTable.getColumnModel().getColumn(0).setMinWidth(75);
+            MBTable.getColumnModel().getColumn(0).setPreferredWidth(75);
+            MBTable.getColumnModel().getColumn(0).setMaxWidth(75);
             MBTable.getColumnModel().getColumn(1).setResizable(false);
             MBTable.getColumnModel().getColumn(2).setResizable(false);
             MBTable.getColumnModel().getColumn(3).setResizable(false);
+            MBTable.getColumnModel().getColumn(3).setPreferredWidth(1);
             MBTable.getColumnModel().getColumn(4).setResizable(false);
+            MBTable.getColumnModel().getColumn(4).setPreferredWidth(1);
+            MBTable.getColumnModel().getColumn(5).setMinWidth(135);
+            MBTable.getColumnModel().getColumn(5).setPreferredWidth(135);
+            MBTable.getColumnModel().getColumn(5).setMaxWidth(135);
         }
 
         ManageBooks.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
@@ -424,67 +455,33 @@ public class HomePage extends javax.swing.JFrame {
         });
         ManageUsers.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 238, 83, -1));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        MUTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
-                "", "ID", "Name", "Email", "Phone Number", "Join Date"
+                "", "Name", "Phone Number", "Join Date", "Action"
             }
-        ));
-        jScrollPane4.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setResizable(false);
-            jTable2.getColumnModel().getColumn(0).setPreferredWidth(30);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        MUTable.setRowHeight(40);
+        jScrollPane4.setViewportView(MUTable);
+        if (MUTable.getColumnModel().getColumnCount() > 0) {
+            MUTable.getColumnModel().getColumn(0).setResizable(false);
+            MUTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+            MUTable.getColumnModel().getColumn(1).setResizable(false);
+            MUTable.getColumnModel().getColumn(2).setResizable(false);
+            MUTable.getColumnModel().getColumn(3).setResizable(false);
+            MUTable.getColumnModel().getColumn(4).setMinWidth(135);
+            MUTable.getColumnModel().getColumn(4).setPreferredWidth(135);
+            MUTable.getColumnModel().getColumn(4).setMaxWidth(135);
         }
 
         ManageUsers.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
@@ -573,73 +570,41 @@ public class HomePage extends javax.swing.JFrame {
         });
         BorrowReturn.add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 238, 83, -1));
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        BRBTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+
             },
             new String [] {
-                "", "User ID", "Name", "Book Name", "ISBN", "Borrow Date", "Due Date", "Return Date", "Fine"
+                "", "Borrower Name", "Book Name", "Borrow Date", "Due Date", "Return Date", "Action"
             }
-        ));
-        jScrollPane5.setViewportView(jTable3);
-        if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setResizable(false);
-            jTable3.getColumnModel().getColumn(0).setPreferredWidth(30);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        BRBTable.setRowHeight(40);
+        jScrollPane5.setViewportView(BRBTable);
+        if (BRBTable.getColumnModel().getColumnCount() > 0) {
+            BRBTable.getColumnModel().getColumn(0).setResizable(false);
+            BRBTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+            BRBTable.getColumnModel().getColumn(1).setResizable(false);
+            BRBTable.getColumnModel().getColumn(2).setResizable(false);
+            BRBTable.getColumnModel().getColumn(3).setResizable(false);
+            BRBTable.getColumnModel().getColumn(4).setResizable(false);
+            BRBTable.getColumnModel().getColumn(5).setResizable(false);
+            BRBTable.getColumnModel().getColumn(6).setMinWidth(135);
+            BRBTable.getColumnModel().getColumn(6).setPreferredWidth(135);
+            BRBTable.getColumnModel().getColumn(6).setMaxWidth(135);
         }
 
         BorrowReturn.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
 
         jLabel6.setText("Search here");
-        BorrowReturn.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(449, 241, -1, -1));
+        BorrowReturn.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 240, -1, -1));
 
         jLayeredPane1.setLayer(BorrowReturn, 2);
         jLayeredPane1.add(BorrowReturn, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
@@ -828,6 +793,8 @@ public class HomePage extends javax.swing.JFrame {
         String user="root";
         String password="12345678";
         
+       
+        
         try{
             
             Connection connection = DriverManager.getConnection(url, user, password);
@@ -843,12 +810,14 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable BRBTable;
     private javax.swing.JPanel BorrowReturn;
     private javax.swing.JButton MBAddbook;
     private javax.swing.JButton MBDelete;
     private javax.swing.JTextField MBSearch;
     private javax.swing.JTable MBTable;
     private javax.swing.JButton MBUpdate;
+    private javax.swing.JTable MUTable;
     private javax.swing.JPanel ManageBooks;
     private javax.swing.JPanel ManageUsers;
     private javax.swing.JPanel Search;
@@ -885,8 +854,6 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables

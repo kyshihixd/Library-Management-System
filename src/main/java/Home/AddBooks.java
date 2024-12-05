@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.*;
 import Utility.ConnectionDB;
-
+import Utility.Utility;
 /**
  *
  * @author rat
@@ -98,53 +98,8 @@ public class AddBooks extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (evt.getSource()==jButton1){
-            
             String bookInput = jTextArea1.getText();
-            String[] test = bookInput.split("\n");
-            for (String str: test){
-                System.out.println(str);
-            }
-            
-            /*
-            String[] bookDetails = bookInput.split(","); 
-            if (bookDetails.length != 5) {
-                System.out.println("Invalid input format. Use: Title, Author, Genre, ISBN, Copies");
-                return;
-            }
-
-            String title = bookDetails[0].trim();
-            String author = bookDetails[1].trim();
-            String genre = bookDetails[2].trim();
-            String isbn = bookDetails[3].trim();
-            int copies;
-
-            try {
-                copies = Integer.parseInt(bookDetails[4].trim());
-            } catch (NumberFormatException e) {
-                System.out.println("Copies must be a valid number.");
-                return;
-            }
-            
-            String query = "INSERT INTO books (title, author, genre, isbn, total_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?)";
-            
-            try (Connection connection = ConnectionDB.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
-                    statement.setString(1, title);
-                    statement.setString(2, author);
-                    statement.setString(3, genre);
-                    statement.setString(4, isbn);
-                    statement.setInt(5, copies);
-                    statement.setInt(6, copies);
-                
-                    statement.executeUpdate();
-                    System.out.println("Input successful");
-               
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("Error connecting to the database or executing the query.");
-            }
-            */
+            Utility.addBooks(bookInput);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
