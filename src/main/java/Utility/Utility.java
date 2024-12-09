@@ -210,6 +210,7 @@ public class Utility {
         String[] columnNames = firstRow.keySet().toArray(new String[0]);
 
         DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+        tableModel.setRowCount(0);
         int col = tableModel.getColumnCount();
         for (Map<String, Object> row : map) {
             Object[] rowData = new Object[col];

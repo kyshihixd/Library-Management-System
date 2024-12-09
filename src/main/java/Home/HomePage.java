@@ -32,10 +32,19 @@ public class HomePage extends javax.swing.JFrame {
     /**
      * Creates new form HomePage
      */
-    HomePage home;
     public static List<Map<String, Object>> toBeAddedMB = new ArrayList<>();
     public static List<Map<String, Object>> toBeAddedMU = new ArrayList<>();
     public static List<Map<String, Object>> toBeAddedBRB = new ArrayList<>();
+    
+    public static List<Map<String, Object>> toBeUpdatedMB = new ArrayList<>();
+    public static List<Map<String, Object>> toBeUpdatedMU = new ArrayList<>();
+    public static List<Map<String, Object>> toBeUpdatedBRB = new ArrayList<>();
+    
+    public static List<Map<String, Object>> toBeDeletedMB = new ArrayList<>();
+    public static List<Map<String, Object>> toBeDeletedMU = new ArrayList<>();
+    public static List<Map<String, Object>> toBeDetetedBRB = new ArrayList<>();
+    
+    
     List<Map<String, Object>> booksList;
     List<Map<String, Object>> usersList;
     List<Map<String, Object>> borrowsList;
@@ -47,13 +56,24 @@ public class HomePage extends javax.swing.JFrame {
         TableActionEvent event1 = new TableActionEvent(){
             public void onEdit(int row){
                 System.out.println("Edit "+ row);
-                System.out.println(toBeAddedMB);
+                Object id = Utility.getIdFromTableRow(MBTable, row);
+                Map<String, Object> selectedBook = Utility.getDataFromID(id, "book_id", booksList);
+                
+                if (selectedBook != null) {
+                    new onEditMB(HomePage.this, selectedBook).setVisible(true);
+                } else {
+                    System.out.println("Error: Book not found in toBeAddedMB.");
+                }
+                System.out.println(id);
+                System.out.println(selectedBook);
             }
     
             public void onDelete(int row){
-                System.out.println("Delete  "+ row);
                 DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
                 model.removeRow(row);
+                toBeDeletedMB.add(booksList.get(row));
+                System.out.println(toBeDeletedMB);
+                booksList.remove(row);
             }
             
             public void onView(int row){
@@ -142,6 +162,7 @@ public class HomePage extends javax.swing.JFrame {
         */
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     System.out.println("Program is exiting...");
+                    System.out.println("All changes now stored in the database");
                     processPendingData();
                 })); 
     }
@@ -397,6 +418,12 @@ public class HomePage extends javax.swing.JFrame {
             }
         });
         ManageBooks.add(MBAddbook, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 110, -1));
+
+        MBSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MBSearchActionPerformed(evt);
+            }
+        });
         ManageBooks.add(MBSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 240, 185, -1));
 
         MBTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -710,18 +737,48 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void MBAddbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBAddbookActionPerformed
-        AddBooks obj = new AddBooks( this);
+        AddBooks obj = new AddBooks(this);
         obj.show();
     }//GEN-LAST:event_MBAddbookActionPerformed
+
+    private void MBSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBSearchActionPerformed
+        String searchQuery = MBSearch.getText().toLowerCase(); // Get search input and make it case-insensitive
+
+        // Filter the booksList or toBeAddedMB
+        List<Map<String, Object>> filteredBooks = booksList.stream()
+                .filter(book -> book.values().stream()
+                        .anyMatch(value -> value.toString().toLowerCase().contains(searchQuery)))
+                .toList();
+
+        // Update the table with filtered results
+        mapToMBTable(filteredBooks, MBTable);
+    }//GEN-LAST:event_MBSearchActionPerformed
     
     public void refreshMBTable() {
         DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
         model.setRowCount(0);
         for (Map<String, Object> book : toBeAddedMB) {
+            if (booksList.contains(book))
+                continue;
             booksList.add(book);
         }
-        mapToMBTable(booksList, MBTable);
-        
+        mapToMBTable(booksList, MBTable);   
+    }
+    
+    public void updateMBTable() {
+        DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
+        model.setRowCount(0);
+        for (Map<String, Object> book : toBeUpdatedMB) {
+            for (int i = 0; i < booksList.size(); i++) {
+                Map<String, Object> booktemp = booksList.get(i);
+                if (booktemp.get("book_id").equals(book.get("book_id"))) {
+                    booksList.remove(i);
+                    break; // Exit the loop once the book is removed
+                }
+            }
+            booksList.add(book);
+        }
+        mapToMBTable(booksList, MBTable);   
     }
     
     void setColor(JPanel panel){
