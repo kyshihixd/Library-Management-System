@@ -12,7 +12,13 @@ import java.sql.*;
 import Utility.TableActionCellRender;
 import Utility.TableActionCellEditor;
 import Utility.TableActionEvent;
+import Utility.*;
+import static Utility.Utility.mapToMBTable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -26,21 +32,61 @@ public class HomePage extends javax.swing.JFrame {
     /**
      * Creates new form HomePage
      */
+    HomePage home;
+    public static List<Map<String, Object>> toBeAddedMB = new ArrayList<>();
+    public static List<Map<String, Object>> toBeAddedMU = new ArrayList<>();
+    public static List<Map<String, Object>> toBeAddedBRB = new ArrayList<>();
+    List<Map<String, Object>> booksList;
+    List<Map<String, Object>> usersList;
+    List<Map<String, Object>> borrowsList;
     public HomePage() {
         initComponents();
+        booksList = Utility.BooksToTableList();
+        mapToMBTable(booksList, MBTable); // SET TABLE MB
+        
         TableActionEvent event1 = new TableActionEvent(){
             public void onEdit(int row){
                 System.out.println("Edit "+ row);
+                System.out.println(toBeAddedMB);
             }
     
             public void onDelete(int row){
                 System.out.println("Delete  "+ row);
+                DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
+                model.removeRow(row);
             }
             
             public void onView(int row){
                 System.out.println("View  "+ row);
+                Object id = Utility.getIdFromTableRow(MBTable, row);
+                Map<String, Object> data = Utility.getDataFromID(id, "book_id", booksList);
+                    if (data != null) {
+                    StringBuilder message = new StringBuilder("Book Details:\n");
+                    message.append("Book ID: ").append(data.get("book_id")).append("\n");
+                    message.append("Title: ").append(data.get("title")).append("\n");
+                    message.append("Author: ").append(data.get("author")).append("\n");
+                    message.append("Genre: ").append(data.get("genre")).append("\n");
+                    message.append("ISBN: ").append(data.get("isbn")).append("\n");
+                    message.append("Total Copies: ").append(data.get("total_copies")).append("\n");
+                    message.append("Available Copies: ").append(data.get("available_copies"));
+
+                    JOptionPane.showMessageDialog(
+                        null,
+                        message.toString(), 
+                        "View Book Details", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                } else {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No data found for the selected book.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
         };
+        
         MBTable.getColumnModel().getColumn(5).setCellRenderer(new TableActionCellRender());
         MBTable.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event1));
         
@@ -70,6 +116,8 @@ public class HomePage extends javax.swing.JFrame {
     
             public void onDelete(int row){
                 System.out.println("Delete  "+ row);
+                DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
+                model.removeRow(row);
             }
             
             public void onView(int row){
@@ -79,11 +127,8 @@ public class HomePage extends javax.swing.JFrame {
         
         BRBTable.getColumnModel().getColumn(6).setCellRenderer(new TableActionCellRender());
         BRBTable.getColumnModel().getColumn(6).setCellEditor(new TableActionCellEditor(event3));
-        
-        Object[] row1 = {4, "The Hobbit", "J.R.R. Tolkien",  2, 1};
-        DefaultTableModel dt = (DefaultTableModel)MBTable.getModel();
-        dt.addRow(row1);
-        
+       
+    
         /*
         Object[] row1 = {1, "The Great Gatsby", "F. Scott Fitzgerald", "Fiction", "9780743273565", 5, 3};
         Object[] row2 = {2, "1984", "George Orwell", "Dystopian", "9780451524935", 3, 3};
@@ -95,6 +140,10 @@ public class HomePage extends javax.swing.JFrame {
         dt.addRow(row3);
         dt.addRow(row1);
         */
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    System.out.println("Program is exiting...");
+                    processPendingData();
+                })); 
     }
 
     /**
@@ -122,9 +171,7 @@ public class HomePage extends javax.swing.JFrame {
         ManageBooks = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        MBDelete = new javax.swing.JButton();
         MBAddbook = new javax.swing.JButton();
-        MBUpdate = new javax.swing.JButton();
         MBSearch = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
         MBTable = new javax.swing.JTable();
@@ -132,20 +179,16 @@ public class HomePage extends javax.swing.JFrame {
         ManageUsers = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         MUTable = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
         jTextField2 = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
         BorrowReturn = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        jButton7 = new javax.swing.JButton();
         jTextField3 = new javax.swing.JTextField();
         jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         BRBTable = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
@@ -347,29 +390,13 @@ public class HomePage extends javax.swing.JFrame {
 
         ManageBooks.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 750, 186));
 
-        MBDelete.setText("Delete");
-        MBDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBDeleteActionPerformed(evt);
-            }
-        });
-        ManageBooks.add(MBDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(219, 238, 90, -1));
-
         MBAddbook.setText("Add Book");
         MBAddbook.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MBAddbookActionPerformed(evt);
             }
         });
-        ManageBooks.add(MBAddbook, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, -1, -1));
-
-        MBUpdate.setText("Update");
-        MBUpdate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBUpdateActionPerformed(evt);
-            }
-        });
-        ManageBooks.add(MBUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(118, 238, 81, -1));
+        ManageBooks.add(MBAddbook, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 110, -1));
         ManageBooks.add(MBSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 240, 185, -1));
 
         MBTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -447,14 +474,6 @@ public class HomePage extends javax.swing.JFrame {
 
         ManageUsers.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1120, 186));
 
-        jButton4.setText("Update");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-        ManageUsers.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 238, 83, -1));
-
         MUTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -488,15 +507,6 @@ public class HomePage extends javax.swing.JFrame {
 
         jLabel5.setText("Search here");
         ManageUsers.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 241, -1, -1));
-
-        jButton5.setText("Delete");
-        jButton5.setMargin(new java.awt.Insets(2, 14, 3, 15));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-        ManageUsers.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(234, 238, 84, -1));
         ManageUsers.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 170, -1));
 
         jButton6.setText("Add User");
@@ -505,7 +515,7 @@ public class HomePage extends javax.swing.JFrame {
                 jButton6ActionPerformed(evt);
             }
         });
-        ManageUsers.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 90, -1));
+        ManageUsers.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 120, -1));
 
         jLayeredPane1.setLayer(ManageUsers, 3);
         jLayeredPane1.add(ManageUsers, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, -1));
@@ -543,14 +553,6 @@ public class HomePage extends javax.swing.JFrame {
         );
 
         BorrowReturn.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1490, 186));
-
-        jButton7.setText("Return Books");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
-            }
-        });
-        BorrowReturn.add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(275, 238, 118, -1));
         BorrowReturn.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 160, -1));
 
         jButton8.setText("Borrow Books");
@@ -560,15 +562,7 @@ public class HomePage extends javax.swing.JFrame {
                 jButton8ActionPerformed(evt);
             }
         });
-        BorrowReturn.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 130, -1));
-
-        jButton9.setText("Update");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
-            }
-        });
-        BorrowReturn.add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 238, 83, -1));
+        BorrowReturn.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 140, -1));
 
         BRBTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -707,43 +701,28 @@ public class HomePage extends javax.swing.JFrame {
         Search.setVisible(true);
     }//GEN-LAST:event_btn_CMouseClicked
 
-    private void MBDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBDeleteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_MBDeleteActionPerformed
-
-    private void MBUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBUpdateActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_MBUpdateActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
-
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton9ActionPerformed
-
     private void MBAddbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBAddbookActionPerformed
-        AddBooks obj = new AddBooks();
+        AddBooks obj = new AddBooks( this);
         obj.show();
     }//GEN-LAST:event_MBAddbookActionPerformed
     
+    public void refreshMBTable() {
+        DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
+        model.setRowCount(0);
+        for (Map<String, Object> book : toBeAddedMB) {
+            booksList.add(book);
+        }
+        mapToMBTable(booksList, MBTable);
+        
+    }
     
     void setColor(JPanel panel){
         panel.setBackground(new Color(147,255,249));
@@ -756,6 +735,15 @@ public class HomePage extends javax.swing.JFrame {
     private void HomeActionPerformed(java.awt.event.ActionEvent evt) {                                         
         
     }  
+    
+    private static void processPendingData() {
+        System.out.println("Processing pending data...");
+        for (Map<String, Object> book : toBeAddedMB) {
+            System.out.println("Saving book: " + book);
+            // Example: Save to database or file
+        }
+        System.out.println("All pending data processed.");
+    }
     /**
      * @param args the command line arguments
      */
@@ -787,36 +775,19 @@ public class HomePage extends javax.swing.JFrame {
             public void run() {
                 HomePage home = new HomePage();
                 home.setVisible(true);
+               
             }
         });
-        String url="jdbc:mysql://localhost:3306/sys";
-        String user="root";
-        String password="12345678";
         
        
-        
-        try{
-            
-            Connection connection = DriverManager.getConnection(url, user, password);
-            Statement statement = connection.createStatement();
-        }
-        
-            catch (SQLException throwables) {
-            throwables.printStackTrace();}
-        
-
-        
-        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable BRBTable;
     private javax.swing.JPanel BorrowReturn;
     private javax.swing.JButton MBAddbook;
-    private javax.swing.JButton MBDelete;
     private javax.swing.JTextField MBSearch;
     private javax.swing.JTable MBTable;
-    private javax.swing.JButton MBUpdate;
     private javax.swing.JTable MUTable;
     private javax.swing.JPanel ManageBooks;
     private javax.swing.JPanel ManageUsers;
@@ -825,12 +796,8 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel btn_B;
     private javax.swing.JPanel btn_C;
     private javax.swing.JPanel btn_Home;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

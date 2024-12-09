@@ -4,6 +4,7 @@
  */
 package Utility;
 
+import java.util.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,9 +14,13 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import javax.swing.JButton;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -68,7 +73,159 @@ public class Utility {
             }
     }
     
+    public static List<Map<String, Object>> stringToListMap(String str, List<Map<String, Object>> list){
+        String[] books = str.split("\n");
+        
+        for (String string : books){
+            String[] bookDetails = string.split(",");
+            Map<String, Object> map = new HashMap<>();
+            if (bookDetails.length == 6) {
+                map.put("title", bookDetails[0].trim());
+                map.put("author", bookDetails[1].trim());
+                map.put("genre", bookDetails[2].trim());
+                map.put("isbn", bookDetails[3].trim());
+                map.put("total_copies", Integer.parseInt(bookDetails[4].trim()));
+                map.put("available_copies", Integer.parseInt(bookDetails[5].trim()));
+            }
+            list.add(map);
+        }
+        
+
+        return list;
+    }
+    
+    public static Object getIdFromTableRow(JTable table, int row){
+        DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+        return tableModel.getValueAt(row, 0);
+    }
+    
+    public static Map<String, Object> getDataFromID(Object id, String key, List<Map<String, Object>> map){
+        for (Map<String, Object> row : map) {
+            if (row.get(key).equals(id)) {
+                return row; 
+            }
+        }
+        return null;
+    }
+    
+    public static List<Map<String, Object>> BooksToTableList(){
+        String query = "SELECT * FROM books";
+        List<Map<String, Object>> booksList = new ArrayList<>();
+
+        try (Connection connection = ConnectionDB.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                Map<String, Object> book = new HashMap<>();
+                for (int i = columnCount; i > 0; i--) {
+                    String columnName = metaData.getColumnName(i);
+                    Object columnValue = resultSet.getObject(i);
+                    book.put(columnName, columnValue);
+                }
+                booksList.add(book);
+            }
+            System.out.println(booksList);
+            System.out.println("Books retrieved successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error connecting to the database or executing the query.");
+        }
+
+        return booksList;
+    }
+    
+    public static List<Map<String, Object>> UsersToTableList(){
+        String query = "SELECT * FROM users";
+        List<Map<String, Object>> booksList = new ArrayList<>();
+
+        try (Connection connection = ConnectionDB.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+    
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                Map<String, Object> book = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    Object columnValue = resultSet.getObject(i);
+                    book.put(columnName, columnValue);
+                }
+                booksList.add(book);
+            }
+            System.out.println(booksList);
+            System.out.println("Books retrieved successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error connecting to the database or executing the query.");
+        }
+
+        return booksList;
+    }
+    
+    public static List<Map<String, Object>> BorrowsToTableList(){
+        String query = "SELECT * FROM borrows_records";
+        List<Map<String, Object>> booksList = new ArrayList<>();
+
+        try (Connection connection = ConnectionDB.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                Map<String, Object> book = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    Object columnValue = resultSet.getObject(i);
+                    book.put(columnName, columnValue);
+                }
+                booksList.add(book);
+            }
+            System.out.println(booksList);
+            System.out.println("Books retrieved successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error connecting to the database or executing the query.");
+        }
+        
+        return booksList;
+    }
+            
+            
+    public static void mapToMBTable(List<Map<String, Object>> map, JTable table){
+        if (map == null || map.isEmpty()) {
+        System.out.println("No data to display in the table.");
+        return;
+        }
+
+        Map<String, Object> firstRow = map.get(0);
+        String[] columnNames = firstRow.keySet().toArray(new String[0]);
+
+        DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+        int col = tableModel.getColumnCount();
+        for (Map<String, Object> row : map) {
+            Object[] rowData = new Object[col];
+            rowData[0] = row.get("book_id");
+            rowData[1] = row.get("title");
+            rowData[2] = row.get("author");
+            rowData[3] = row.get("total_copies");
+            rowData[4] = row.get("available_copies");
+            tableModel.addRow(rowData);
+        }
+    }
+    
     public static void main(String[] arg){
+        List<Map<String, Object>> temp = BooksToTableList();
+        Map<String, Object> item1 = temp.get(0);
+        System.out.println(item1);
         
     }
 

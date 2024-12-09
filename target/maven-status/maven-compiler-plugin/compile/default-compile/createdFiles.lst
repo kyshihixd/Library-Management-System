@@ -1,7 +1,6 @@
 Home\HomePage$12.class
 Utility\TableActionEvent.class
 Home\AddBooks.class
-Home\HomePage$19.class
 Utility\ActionButton$1.class
 Utility\NewJPanel$4.class
 Utility\Utility$ActionButton.class
@@ -11,7 +10,6 @@ Home\HomePage$8.class
 Utility\TableActionCellEditor.class
 Utility\NewJPanel$1.class
 login\SignUp$4.class
-Home\HomePage$16.class
 login\LoginPage.class
 Home\HomePage$5.class
 Home\AddBooks$2.class
@@ -31,7 +29,6 @@ Home\HomePage$3.class
 test\NewJFrame$2.class
 Utility\ConnectionDB.class
 login\SignUp$2.class
-Home\HomePage$17.class
 login\Login$1.class
 login\LoginPage$1.class
 Home\HomePage$7.class
@@ -43,14 +40,11 @@ Home\HomePage$11.class
 login\Login.class
 test\NewJFrame.class
 Utility\NewJPanel$3.class
-Home\HomePage$18.class
 login\SignUp$6.class
 test\NewJFrame$3.class
 Utility\NewJPanel.class
 Home\HomePage$4.class
-Home\HomePage$15.class
 login\LoginPage$2.class
 login\SignUp$3.class
 Utility\NewJPanel$2.class
-Home\HomePage$20.class
 Home\HomePage$1.class
