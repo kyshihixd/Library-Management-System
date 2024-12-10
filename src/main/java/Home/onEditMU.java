@@ -11,23 +11,22 @@ import javax.swing.JOptionPane;
  *
  * @author rat
  */
-public class onEditMB extends javax.swing.JFrame {
+public class onEditMU extends javax.swing.JFrame {
 
     /**
      * Creates new form onEdit
      */
-     private static Map<String, Object> book;
+     private static Map<String, Object> user;
      private static HomePage homePage;
-    public onEditMB(HomePage homePage, Map<String, Object> book) {
+    public onEditMU(HomePage homePage, Map<String, Object> user) {
         initComponents();
         this.homePage = homePage;
-        this.book = book;
-        jTextField1.setText(book.get("title").toString());
-        jTextField2.setText(book.get("author").toString());
-        jTextField3.setText(book.get("genre").toString());
-        jTextField4.setText(book.get("isbn").toString());
-        jTextField5.setText(book.get("total_copies").toString());
-        jTextField6.setText(book.get("available_copies").toString());
+        this.user = user;
+        jTextField1.setText(user.get("external_id").toString());
+        jTextField2.setText(user.get("username").toString());
+        jTextField3.setText(user.get("email").toString());
+        jTextField4.setText(user.get("phone").toString());
+        jTextField5.setText(user.get("join_date").toString());
         
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
@@ -48,13 +47,11 @@ public class onEditMB extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jTextField4 = new javax.swing.JTextField();
         jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
 
         jTextArea1.setColumns(20);
@@ -73,19 +70,15 @@ public class onEditMB extends javax.swing.JFrame {
 
         jTextField5.setText("jTextField5");
 
-        jTextField6.setText("jTextField6");
+        jLabel1.setText("External ID");
 
-        jLabel1.setText("Title");
+        jLabel2.setText("Username");
 
-        jLabel2.setText("Author");
+        jLabel3.setText("Email");
 
-        jLabel3.setText("Genre");
+        jLabel4.setText("Phone Number");
 
-        jLabel4.setText("ISBN");
-
-        jLabel5.setText("Total Copies");
-
-        jLabel6.setText("Available Copies");
+        jLabel5.setText("Join Date");
 
         jButton1.setText("Confirm");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -103,17 +96,15 @@ public class onEditMB extends javax.swing.JFrame {
                 .addComponent(jButton1)
                 .addGap(38, 38, 38))
             .addGroup(layout.createSequentialGroup()
-                .addGap(69, 69, 69)
+                .addGap(59, 59, 59)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6))
-                .addGap(30, 30, 30)
+                    .addComponent(jLabel5))
+                .addGap(52, 52, 52)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField6)
                     .addComponent(jTextField5)
                     .addComponent(jTextField4)
                     .addComponent(jTextField3)
@@ -124,7 +115,7 @@ public class onEditMB extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(43, 43, 43)
+                .addGap(52, 52, 52)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
@@ -144,11 +135,7 @@ public class onEditMB extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addGap(24, 24, 24))
         );
@@ -159,20 +146,19 @@ public class onEditMB extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
         // Retrieve updated values from the text fields
-        book.put("title", jTextField1.getText().trim());
-        book.put("author", jTextField2.getText().trim());
-        book.put("genre", jTextField3.getText().trim());
-        book.put("isbn", jTextField4.getText().trim());
-        book.put("total_copies", Integer.parseInt(jTextField5.getText().trim()));
-        book.put("available_copies", Integer.parseInt(jTextField6.getText().trim()));
+        user.put("external_id", jTextField1.getText().trim());
+        user.put("username", jTextField2.getText().trim());
+        user.put("email", jTextField3.getText().trim());
+        user.put("phone", jTextField4.getText().trim());
+        user.put("join_date", jTextField5.getText().trim());
 
         // Add the updated book to toBeUpdatedMB for tracking
-        if (!HomePage.toBeUpdatedMB.contains(book)) {
-            HomePage.toBeUpdatedMB.add(book);
+        if (!HomePage.toBeUpdatedMU.contains(user)) {
+            HomePage.toBeUpdatedMU.add(user);
         }
 
         // Refresh the table in HomePage
-        homePage.updateMBTable();
+        homePage.updateMUTable();
 
         // Close the edit frame
         dispose();
@@ -198,21 +184,23 @@ public class onEditMB extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(onEditMB.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(onEditMU.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(onEditMB.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(onEditMU.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(onEditMB.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(onEditMU.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(onEditMB.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(onEditMU.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new onEditMB(homePage, book).setVisible(true);
+                new onEditMU(homePage, user).setVisible(true);
             }
         });
     }
@@ -224,7 +212,6 @@ public class onEditMB extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
@@ -232,6 +219,5 @@ public class onEditMB extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 }

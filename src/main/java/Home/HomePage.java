@@ -14,6 +14,7 @@ import Utility.TableActionCellEditor;
 import Utility.TableActionEvent;
 import Utility.*;
 import static Utility.Utility.mapToMBTable;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import login.Login;
 /**
@@ -50,11 +52,18 @@ public class HomePage extends javax.swing.JFrame {
     List<Map<String, Object>> borrowsList;
     public HomePage() {
         initComponents();
+        theader();
         booksList = Utility.BooksToTableList();
-        mapToMBTable(booksList, MBTable); // SET TABLE MB
+        Utility.mapToMBTable(booksList, MBTable); // SET TABLE MB
+        
+        usersList = Utility.UsersToTableList();
+        Utility.mapToMUTable(usersList, MUTable);
         
         TableActionEvent event1 = new TableActionEvent(){
             public void onEdit(int row){
+                if (MBTable.isEditing()) {
+                    MBTable.getCellEditor().stopCellEditing();
+                }
                 System.out.println("Edit "+ row);
                 Object id = Utility.getIdFromTableRow(MBTable, row);
                 Map<String, Object> selectedBook = Utility.getDataFromID(id, "book_id", booksList);
@@ -64,16 +73,19 @@ public class HomePage extends javax.swing.JFrame {
                 } else {
                     System.out.println("Error: Book not found in toBeAddedMB.");
                 }
-                System.out.println(id);
-                System.out.println(selectedBook);
+                System.out.println(toBeUpdatedMB); 
             }
     
             public void onDelete(int row){
-                DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
-                model.removeRow(row);
-                toBeDeletedMB.add(booksList.get(row));
+                if (MBTable.isEditing()) {
+                    MBTable.getCellEditor().stopCellEditing();
+                }
+                Object id = Utility.getIdFromTableRow(MBTable, row);
+                Map<String, Object> selectedBook = Utility.getDataFromID(id, "book_id", booksList);
+                booksList.remove(selectedBook);
+                toBeDeletedMB.add(selectedBook);
+                mapToMBTable(booksList, MBTable);
                 System.out.println(toBeDeletedMB);
-                booksList.remove(row);
             }
             
             public void onView(int row){
@@ -104,8 +116,10 @@ public class HomePage extends javax.swing.JFrame {
                         JOptionPane.ERROR_MESSAGE
                     );
                 }
+                    
             }
         };
+        
         
         MBTable.getColumnModel().getColumn(5).setCellRenderer(new TableActionCellRender());
         MBTable.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event1));
@@ -113,15 +127,60 @@ public class HomePage extends javax.swing.JFrame {
         
         TableActionEvent event2 = new TableActionEvent(){
             public void onEdit(int row){
+                if (MUTable.isEditing()) {
+                    MUTable.getCellEditor().stopCellEditing();
+                }
                 System.out.println("Edit "+ row);
+                Object id = Utility.getIdFromTableRow(MUTable, row);
+                Map<String, Object> selectedUser = Utility.getDataFromID(id, "users_id", usersList);
+                
+                if (selectedUser != null) {
+                    new onEditMU(HomePage.this, selectedUser).setVisible(true);
+                } else {
+                    System.out.println("Error: Book not found in toBeAddedMB.");
+                }
+                System.out.println(toBeUpdatedMU); 
             }
     
             public void onDelete(int row){
-                System.out.println("Delete  "+ row);
+                if (MUTable.isEditing()) {
+                    MUTable.getCellEditor().stopCellEditing();
+                }
+                Object id = Utility.getIdFromTableRow(MUTable, row);
+                Map<String, Object> selectedBook = Utility.getDataFromID(id, "users_id", usersList);
+                usersList.remove(selectedBook);
+                toBeDeletedMU.add(selectedBook);
+                Utility.mapToMUTable(usersList, MUTable);
+                System.out.println(toBeDeletedMU);
             }
             
             public void onView(int row){
                 System.out.println("View  "+ row);
+                Object id = Utility.getIdFromTableRow(MUTable, row);
+                Map<String, Object> data = Utility.getDataFromID(id, "users_id", usersList);
+                    if (data != null) {
+                    StringBuilder message = new StringBuilder("User Details:\n");
+                    message.append("User ID: ").append(data.get("users_id")).append("\n");
+                    message.append("External ID: ").append(data.get("external_id")).append("\n");
+                    message.append("Username: ").append(data.get("username")).append("\n");
+                    message.append("Email: ").append(data.get("email")).append("\n");
+                    message.append("Phone Number: ").append(data.get("phone")).append("\n");
+                    message.append("Join Date: ").append(data.get("join_date")).append("\n");
+
+                    JOptionPane.showMessageDialog(
+                        null,
+                        message.toString(), 
+                        "View User Details", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                } else {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No data found for the selected user.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
         };
         
@@ -186,8 +245,6 @@ public class HomePage extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         btn_B = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        btn_C = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         ManageBooks = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -203,7 +260,7 @@ public class HomePage extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         MUTable = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        MUSearch = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
         BorrowReturn = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
@@ -213,9 +270,6 @@ public class HomePage extends javax.swing.JFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         BRBTable = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
-        Search = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -312,32 +366,6 @@ public class HomePage extends javax.swing.JFrame {
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
-        btn_C.setBackground(new java.awt.Color(122, 232, 224));
-        btn_C.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn_CMouseClicked(evt);
-            }
-        });
-
-        jLabel11.setText("Search Books");
-
-        javax.swing.GroupLayout btn_CLayout = new javax.swing.GroupLayout(btn_C);
-        btn_C.setLayout(btn_CLayout);
-        btn_CLayout.setHorizontalGroup(
-            btn_CLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btn_CLayout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addComponent(jLabel11)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        btn_CLayout.setVerticalGroup(
-            btn_CLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btn_CLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jLabel11)
-                .addContainerGap(22, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -351,7 +379,6 @@ public class HomePage extends javax.swing.JFrame {
             .addComponent(btn_Home, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btn_A, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btn_B, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btn_C, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,9 +393,7 @@ public class HomePage extends javax.swing.JFrame {
                 .addComponent(btn_A, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(btn_B, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btn_C, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(433, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 800));
@@ -411,6 +436,7 @@ public class HomePage extends javax.swing.JFrame {
 
         ManageBooks.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 750, 186));
 
+        MBAddbook.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         MBAddbook.setText("Add Book");
         MBAddbook.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -426,6 +452,7 @@ public class HomePage extends javax.swing.JFrame {
         });
         ManageBooks.add(MBSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 240, 185, -1));
 
+        MBTable.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         MBTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -461,6 +488,7 @@ public class HomePage extends javax.swing.JFrame {
 
         ManageBooks.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
 
+        jLabel3.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         jLabel3.setText("Search here");
         ManageBooks.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(453, 241, -1, -1));
 
@@ -501,6 +529,7 @@ public class HomePage extends javax.swing.JFrame {
 
         ManageUsers.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1120, 186));
 
+        MUTable.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         MUTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -532,10 +561,18 @@ public class HomePage extends javax.swing.JFrame {
 
         ManageUsers.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
 
+        jLabel5.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         jLabel5.setText("Search here");
         ManageUsers.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(459, 241, -1, -1));
-        ManageUsers.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 170, -1));
 
+        MUSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MUSearchActionPerformed(evt);
+            }
+        });
+        ManageUsers.add(MUSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 170, -1));
+
+        jButton6.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         jButton6.setText("Add User");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -582,6 +619,7 @@ public class HomePage extends javax.swing.JFrame {
         BorrowReturn.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1490, 186));
         BorrowReturn.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 160, -1));
 
+        jButton8.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         jButton8.setText("Borrow Books");
         jButton8.setPreferredSize(new java.awt.Dimension(110, 23));
         jButton8.addActionListener(new java.awt.event.ActionListener() {
@@ -591,6 +629,7 @@ public class HomePage extends javax.swing.JFrame {
         });
         BorrowReturn.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 140, -1));
 
+        BRBTable.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         BRBTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -624,48 +663,12 @@ public class HomePage extends javax.swing.JFrame {
 
         BorrowReturn.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
 
+        jLabel6.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         jLabel6.setText("Search here");
         BorrowReturn.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 240, -1, -1));
 
         jLayeredPane1.setLayer(BorrowReturn, 2);
         jLayeredPane1.add(BorrowReturn, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
-
-        Search.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel6.setBackground(new java.awt.Color(128, 128, 128));
-        jPanel6.setAlignmentX(0.0F);
-        jPanel6.setAlignmentY(0.0F);
-        jPanel6.setAutoscrolls(true);
-        jPanel6.setFocusCycleRoot(true);
-        jPanel6.setFocusTraversalPolicyProvider(true);
-        jPanel6.setPreferredSize(new java.awt.Dimension(1145, 100));
-        jPanel6.setVerifyInputWhenFocusTarget(false);
-
-        jLabel12.setFont(new java.awt.Font("Century Gothic", 1, 24)); // NOI18N
-        jLabel12.setText("Search");
-        jLabel12.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(jLabel12)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(79, Short.MAX_VALUE))
-        );
-
-        Search.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1562, 186));
-
-        jLayeredPane1.setLayer(Search, 1);
-        jLayeredPane1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 800));
 
         jPanel1.add(jLayeredPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 0, 750, -1));
 
@@ -688,48 +691,33 @@ public class HomePage extends javax.swing.JFrame {
         setColor(btn_B);
         resetColor(btn_Home);
         resetColor(btn_A);
-        resetColor(btn_C);
         ManageBooks.setVisible(false);
         ManageUsers.setVisible(false);
         BorrowReturn.setVisible(true);
-        Search.setVisible(false);
     }//GEN-LAST:event_btn_BMouseClicked
 
     private void btn_HomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_HomeMouseClicked
         setColor(btn_Home);
         resetColor(btn_A);
         resetColor(btn_B);
-        resetColor(btn_C);
         ManageBooks.setVisible(true);
         ManageUsers.setVisible(false);
         BorrowReturn.setVisible(false);
-        Search.setVisible(false);
     }//GEN-LAST:event_btn_HomeMouseClicked
 
     private void btn_AMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_AMouseClicked
         setColor(btn_A);
         resetColor(btn_Home);
         resetColor(btn_B);
-        resetColor(btn_C);
         ManageBooks.setVisible(false);
         ManageUsers.setVisible(true);
         BorrowReturn.setVisible(false);
-        Search.setVisible(false);
     }//GEN-LAST:event_btn_AMouseClicked
 
-    private void btn_CMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_CMouseClicked
-        setColor(btn_C);
-        resetColor(btn_Home);
-        resetColor(btn_B);
-        resetColor(btn_A);
-        ManageBooks.setVisible(false);
-        ManageUsers.setVisible(false);
-        BorrowReturn.setVisible(false);
-        Search.setVisible(true);
-    }//GEN-LAST:event_btn_CMouseClicked
-
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        AddUsers obj = new AddUsers(this);
+        obj.show();
+        System.out.println(toBeAddedMU);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -739,20 +727,30 @@ public class HomePage extends javax.swing.JFrame {
     private void MBAddbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBAddbookActionPerformed
         AddBooks obj = new AddBooks(this);
         obj.show();
+        System.out.println(toBeAddedMB);
     }//GEN-LAST:event_MBAddbookActionPerformed
 
     private void MBSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBSearchActionPerformed
-        String searchQuery = MBSearch.getText().toLowerCase(); // Get search input and make it case-insensitive
+        String searchQuery = MBSearch.getText().toLowerCase();
 
-        // Filter the booksList or toBeAddedMB
         List<Map<String, Object>> filteredBooks = booksList.stream()
                 .filter(book -> book.values().stream()
                         .anyMatch(value -> value.toString().toLowerCase().contains(searchQuery)))
                 .toList();
 
-        // Update the table with filtered results
         mapToMBTable(filteredBooks, MBTable);
     }//GEN-LAST:event_MBSearchActionPerformed
+
+    private void MUSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MUSearchActionPerformed
+                String searchQuery = MUSearch.getText().toLowerCase();
+
+        List<Map<String, Object>> filteredBooks = usersList.stream()
+                .filter(user -> user.values().stream()
+                        .anyMatch(value -> value.toString().toLowerCase().contains(searchQuery)))
+                .toList();
+
+        Utility.mapToMUTable(filteredBooks, MUTable);
+    }//GEN-LAST:event_MUSearchActionPerformed
     
     public void refreshMBTable() {
         DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
@@ -766,19 +764,55 @@ public class HomePage extends javax.swing.JFrame {
     }
     
     public void updateMBTable() {
-        DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
-        model.setRowCount(0);
-        for (Map<String, Object> book : toBeUpdatedMB) {
-            for (int i = 0; i < booksList.size(); i++) {
-                Map<String, Object> booktemp = booksList.get(i);
-                if (booktemp.get("book_id").equals(book.get("book_id"))) {
-                    booksList.remove(i);
-                    break; // Exit the loop once the book is removed
-                }
+        if (!toBeUpdatedMB.isEmpty()) {
+        Map<String, Object> book = toBeUpdatedMB.get(toBeUpdatedMB.size() - 1);
+
+        for (int i = 0; i < booksList.size(); i++) {
+            Map<String, Object> booktemp = booksList.get(i);
+            if (booktemp.get("book_id").equals(book.get("book_id"))) {
+                booksList.remove(i);
+                break; 
             }
-            booksList.add(book);
         }
-        mapToMBTable(booksList, MBTable);   
+        booksList.add(book);
+        mapToMBTable(booksList, MBTable);
+        }  
+    }
+    
+    public void refreshMUTable() {
+        DefaultTableModel model = (DefaultTableModel) MUTable.getModel();
+        model.setRowCount(0);
+        for (Map<String, Object>user : toBeAddedMU) {
+            if (usersList.contains(user))
+                continue;
+            usersList.add(user);
+        }
+        Utility.mapToMUTable(usersList, MUTable);   
+    }
+    
+    public void updateMUTable() {
+        if (!toBeUpdatedMU.isEmpty()) {
+        Map<String, Object> book = toBeUpdatedMU.get(toBeUpdatedMU.size() - 1);
+
+        for (int i = 0; i < usersList.size(); i++) {
+            Map<String, Object> booktemp = usersList.get(i);
+            if (booktemp.get("users_id").equals(book.get("users_id"))) {
+                usersList.remove(i);
+                break; 
+            }
+        }
+        usersList.add(book);
+        Utility.mapToMUTable(usersList, MUTable);
+        }  
+    }
+    
+    private void theader(){
+        JTableHeader MBHead = MBTable.getTableHeader();
+        JTableHeader MUHead = MUTable.getTableHeader();
+        JTableHeader BRBHead = BRBTable.getTableHeader();
+        MBHead.setFont(new Font("Century Gothic",Font.PLAIN, 12));
+        MUHead.setFont(new Font("Century Gothic",Font.PLAIN, 12));
+        BRBHead.setFont(new Font("Century Gothic",Font.PLAIN, 12));
     }
     
     void setColor(JPanel panel){
@@ -845,20 +879,17 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JButton MBAddbook;
     private javax.swing.JTextField MBSearch;
     private javax.swing.JTable MBTable;
+    private javax.swing.JTextField MUSearch;
     private javax.swing.JTable MUTable;
     private javax.swing.JPanel ManageBooks;
     private javax.swing.JPanel ManageUsers;
-    private javax.swing.JPanel Search;
     private javax.swing.JPanel btn_A;
     private javax.swing.JPanel btn_B;
-    private javax.swing.JPanel btn_C;
     private javax.swing.JPanel btn_Home;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -873,12 +904,10 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 }

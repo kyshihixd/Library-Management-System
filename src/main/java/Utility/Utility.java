@@ -223,6 +223,28 @@ public class Utility {
         }
     }
     
+    public static void mapToMUTable(List<Map<String, Object>> map, JTable table){
+        if (map == null || map.isEmpty()) {
+        System.out.println("No data to display in the table.");
+        return;
+        }
+
+        Map<String, Object> firstRow = map.get(0);
+        String[] columnNames = firstRow.keySet().toArray(new String[0]);
+
+        DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+        tableModel.setRowCount(0);
+        int col = tableModel.getColumnCount();
+        for (Map<String, Object> row : map) {
+            Object[] rowData = new Object[col];
+            rowData[0] = row.get("users_id");
+            rowData[1] = row.get("username");
+            rowData[2] = row.get("phone");
+            rowData[3] = row.get("join_date");
+            tableModel.addRow(rowData);
+        }
+    }
+    
     public static void main(String[] arg){
         List<Map<String, Object>> temp = BooksToTableList();
         Map<String, Object> item1 = temp.get(0);
