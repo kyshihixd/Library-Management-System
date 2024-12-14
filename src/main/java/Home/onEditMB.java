@@ -22,6 +22,7 @@ public class onEditMB extends javax.swing.JFrame {
         initComponents();
         this.homePage = homePage;
         this.book = book;
+        this.setLocationRelativeTo(null);
         jTextField1.setText(book.get("title").toString());
         jTextField2.setText(book.get("author").toString());
         jTextField3.setText(book.get("genre").toString());
@@ -158,7 +159,7 @@ public class onEditMB extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-        // Retrieve updated values from the text fields
+        
         book.put("title", jTextField1.getText().trim());
         book.put("author", jTextField2.getText().trim());
         book.put("genre", jTextField3.getText().trim());
@@ -166,19 +167,20 @@ public class onEditMB extends javax.swing.JFrame {
         book.put("total_copies", Integer.parseInt(jTextField5.getText().trim()));
         book.put("available_copies", Integer.parseInt(jTextField6.getText().trim()));
 
-        // Add the updated book to toBeUpdatedMB for tracking
+       
         if (!HomePage.toBeUpdatedMB.contains(book)) {
             HomePage.toBeUpdatedMB.add(book);
+            HomePage.tracker.add("updateMB");
         }
 
-        // Refresh the table in HomePage
+        
         homePage.updateMBTable();
 
-        // Close the edit frame
+        
         dispose();
     } catch (NumberFormatException ex) {
         JOptionPane.showMessageDialog(this, "Invalid number format for copies.", "Error", JOptionPane.ERROR_MESSAGE);
-    }        // TODO add your handling code here:
+    }        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

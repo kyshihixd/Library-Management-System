@@ -92,17 +92,17 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enter Users: External_ID, Username, Email, Phone Number, Join Date"/>
+        <Property name="text" type="java.lang.String" value="Enter Users: External_ID, Username, Email, Phone Number"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="EX: itcsiu22300, Dinh Bao Anh, cs22300@gmail.com, 0932190944, 12/12/2024 "/>
+        <Property name="text" type="java.lang.String" value="EX: itcsiu22300, Dinh Bao Anh, cs22300@gmail.com, 0932190944 "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="      OOP, M.June, Eduction, 9780321413454, 4,4"/>
+        <Property name="text" type="java.lang.String" value="      itcsiu22300, Dinh Bao Anh, cs22300@gmail.com, 0932190944 "/>
       </Properties>
     </Component>
   </SubComponents>

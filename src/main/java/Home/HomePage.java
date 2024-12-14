@@ -15,9 +15,13 @@ import Utility.TableActionEvent;
 import Utility.*;
 import static Utility.Utility.mapToMBTable;
 import java.awt.Font;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -44,8 +48,9 @@ public class HomePage extends javax.swing.JFrame {
     
     public static List<Map<String, Object>> toBeDeletedMB = new ArrayList<>();
     public static List<Map<String, Object>> toBeDeletedMU = new ArrayList<>();
-    public static List<Map<String, Object>> toBeDetetedBRB = new ArrayList<>();
+    public static List<Map<String, Object>> toBeDeletedBRB = new ArrayList<>();
     
+    public static Queue<String> tracker = new LinkedList<>();
     
     List<Map<String, Object>> booksList;
     List<Map<String, Object>> usersList;
@@ -58,6 +63,9 @@ public class HomePage extends javax.swing.JFrame {
         
         usersList = Utility.UsersToTableList();
         Utility.mapToMUTable(usersList, MUTable);
+        
+        borrowsList = Utility.BorrowsToTableList();
+        Utility.mapToBRBTable(borrowsList,usersList,booksList, BRBTable);
         
         TableActionEvent event1 = new TableActionEvent(){
             public void onEdit(int row){
@@ -84,6 +92,7 @@ public class HomePage extends javax.swing.JFrame {
                 Map<String, Object> selectedBook = Utility.getDataFromID(id, "book_id", booksList);
                 booksList.remove(selectedBook);
                 toBeDeletedMB.add(selectedBook);
+                tracker.add("delMB");
                 mapToMBTable(booksList, MBTable);
                 System.out.println(toBeDeletedMB);
             }
@@ -150,6 +159,7 @@ public class HomePage extends javax.swing.JFrame {
                 Map<String, Object> selectedBook = Utility.getDataFromID(id, "users_id", usersList);
                 usersList.remove(selectedBook);
                 toBeDeletedMU.add(selectedBook);
+                tracker.add("delMU");
                 Utility.mapToMUTable(usersList, MUTable);
                 System.out.println(toBeDeletedMU);
             }
@@ -189,40 +199,146 @@ public class HomePage extends javax.swing.JFrame {
         
         
         TableActionEvent event3 = new TableActionEvent(){
-            public void onEdit(int row){
-                System.out.println("Edit "+ row);
+            public void onEdit(int row) {
+                if (BRBTable.isEditing()) {
+                    BRBTable.getCellEditor().stopCellEditing();
+                }
+
+                System.out.println("Edit " + row);
+
+                Object id = Utility.getIdFromTableRow(BRBTable, row);
+                Map<String, Object> selectedBorrow = Utility.getDataFromID(id, "record_id", borrowsList);
+
+                if (selectedBorrow.get("return_date") != null) {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "Cannot edit record. The book is already returned.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                } else {    
+                    
+                    Map<String, Object> updatedBook = null;
+                    for (int i = 0; i < booksList.size(); i++) {
+                        Map<String, Object> book = booksList.get(i);
+                        if (book.get("book_id").equals(selectedBorrow.get("book_id"))) {
+                            updatedBook = new HashMap<>(book); 
+                            updatedBook.put("available_copies", (int)book.get("available_copies") + 1);
+
+                            booksList.remove(i);
+                            break;
+                        }
+                    }
+
+                    if (updatedBook != null) {
+                        booksList.add(updatedBook);
+                        toBeUpdatedMB.add(updatedBook);
+                        tracker.add("updateMB");
+                        tracker.add("updateBRB");
+                        
+                        refreshMBTable();
+                        System.out.println("Book updated successfully: " + updatedBook);
+                    } else {
+                        System.out.println("Error: Book not found in booksList.");
+                    }
+
+                        java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+                        selectedBorrow.put("return_date", currentDate);
+
+                        java.sql.Date dueDate = (java.sql.Date) selectedBorrow.get("due_date");
+                        if (currentDate.after(dueDate)) {
+                            selectedBorrow.put("fine", 50.00);
+                        } else {
+                            selectedBorrow.put("fine", 0.00);
+                        }
+
+                        toBeUpdatedBRB.add(selectedBorrow);
+                        tracker.add("updateBRB");
+
+                        updateBRBTable();
+                        System.out.println("Updated borrow record: " + selectedBorrow);
+                    }
             }
+
     
             public void onDelete(int row){
-                System.out.println("Delete  "+ row);
-                DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
-                model.removeRow(row);
+                if (BRBTable.isEditing()) {
+                    BRBTable.getCellEditor().stopCellEditing();
+                }
+                Object id = Utility.getIdFromTableRow(BRBTable, row);
+                Map<String, Object> selectedUser = Utility.getDataFromID(id, "record_id", borrowsList);
+                if (selectedUser.get("return_date") == null){
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "Cannot delete unfinished transaction",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
+                else {
+                    borrowsList.remove(selectedUser);
+                    toBeDeletedBRB.add(selectedUser);
+                    tracker.add("delBRB");
+                    Utility.mapToBRBTable(borrowsList,usersList,booksList, BRBTable);
+                    System.out.println(toBeDeletedBRB);
+                }
+                
             }
             
             public void onView(int row){
                 System.out.println("View  "+ row);
+                Object id = Utility.getIdFromTableRow(BRBTable, row);
+                Map<String, Object> data = Utility.getDataFromID(id, "record_id", borrowsList);
+                Object bookId = data.get("book_id");
+                Object userId = data.get("users_id");
+
+                String bookName = booksList.stream()
+                    .filter(book -> book.get("book_id").equals(bookId))
+                    .map(book -> (String) book.get("title"))
+                    .findFirst()
+                    .orElse("Unknown Book");
+
+                String userName = usersList.stream()
+                    .filter(user -> user.get("users_id").equals(userId))
+                    .map(user -> (String) user.get("username"))
+                    .findFirst()
+                    .orElse("Unknown User");
+                    if (data != null) {
+                    StringBuilder message = new StringBuilder("User Details:\n");
+                    message.append("Record ID: ").append(data.get("record_id")).append("\n");
+                    message.append("Book name: ").append(bookName).append("\n");
+                    message.append("User name: ").append(userName).append("\n");
+                    message.append("Borrow Date: ").append(data.get("borrow_date")).append("\n");
+                    message.append("Due Date: ").append(data.get("due_date")).append("\n");
+                    message.append("Return Date: ").append(data.get("return_date")).append("\n");
+                    message.append("Fine: ").append(data.get("fine")).append("\n");
+
+                    JOptionPane.showMessageDialog(
+                        null,
+                        message.toString(), 
+                        "View User Details", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                } else {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No data found for the selected user.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
         };
         
-        BRBTable.getColumnModel().getColumn(6).setCellRenderer(new TableActionCellRender());
-        BRBTable.getColumnModel().getColumn(6).setCellEditor(new TableActionCellEditor(event3));
+        BRBTable.getColumnModel().getColumn(5).setCellRenderer(new TableActionCellRender());
+        BRBTable.getColumnModel().getColumn(5).setCellEditor(new TableActionCellEditor(event3));
        
     
-        /*
-        Object[] row1 = {1, "The Great Gatsby", "F. Scott Fitzgerald", "Fiction", "9780743273565", 5, 3};
-        Object[] row2 = {2, "1984", "George Orwell", "Dystopian", "9780451524935", 3, 3};
-        Object[] row3 = {3, "To Kill a Mockingbird", "Harper Lee", "Fiction", "9780060935467", 4, 2};
-        Object[] row4 = {4, "The Hobbit", "J.R.R. Tolkien", "Fantasy", "9780547928227", 2, 1};
-        DefaultTableModel dt = (DefaultTableModel)MBTable.getModel();
-        dt.addRow(row1);
-        dt.addRow(row2);
-        dt.addRow(row3);
-        dt.addRow(row1);
-        */
+        
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     System.out.println("Program is exiting...");
                     System.out.println("All changes now stored in the database");
-                    processPendingData();
+                    processPendingData(tracker);
                 })); 
     }
 
@@ -265,8 +381,8 @@ public class HomePage extends javax.swing.JFrame {
         BorrowReturn = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton8 = new javax.swing.JButton();
+        BRBSearch = new javax.swing.JTextField();
+        BorrowBt = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         BRBTable = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
@@ -617,17 +733,23 @@ public class HomePage extends javax.swing.JFrame {
         );
 
         BorrowReturn.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 1490, 186));
-        BorrowReturn.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 160, -1));
 
-        jButton8.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
-        jButton8.setText("Borrow Books");
-        jButton8.setPreferredSize(new java.awt.Dimension(110, 23));
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        BRBSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                BRBSearchActionPerformed(evt);
             }
         });
-        BorrowReturn.add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 140, -1));
+        BorrowReturn.add(BRBSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 238, 160, -1));
+
+        BorrowBt.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
+        BorrowBt.setText("Borrow Books");
+        BorrowBt.setPreferredSize(new java.awt.Dimension(110, 23));
+        BorrowBt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BorrowBtActionPerformed(evt);
+            }
+        });
+        BorrowReturn.add(BorrowBt, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 238, 140, -1));
 
         BRBTable.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
         BRBTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -635,11 +757,11 @@ public class HomePage extends javax.swing.JFrame {
 
             },
             new String [] {
-                "", "Borrower Name", "Book Name", "Borrow Date", "Due Date", "Return Date", "Action"
+                "", "Borrower Name", "Book Name", "Due Date", "Return Date", "Action"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, true
+                false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -650,15 +772,18 @@ public class HomePage extends javax.swing.JFrame {
         jScrollPane5.setViewportView(BRBTable);
         if (BRBTable.getColumnModel().getColumnCount() > 0) {
             BRBTable.getColumnModel().getColumn(0).setResizable(false);
-            BRBTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+            BRBTable.getColumnModel().getColumn(0).setPreferredWidth(20);
             BRBTable.getColumnModel().getColumn(1).setResizable(false);
+            BRBTable.getColumnModel().getColumn(1).setPreferredWidth(160);
             BRBTable.getColumnModel().getColumn(2).setResizable(false);
+            BRBTable.getColumnModel().getColumn(2).setPreferredWidth(160);
             BRBTable.getColumnModel().getColumn(3).setResizable(false);
+            BRBTable.getColumnModel().getColumn(3).setPreferredWidth(45);
             BRBTable.getColumnModel().getColumn(4).setResizable(false);
-            BRBTable.getColumnModel().getColumn(5).setResizable(false);
-            BRBTable.getColumnModel().getColumn(6).setMinWidth(135);
-            BRBTable.getColumnModel().getColumn(6).setPreferredWidth(135);
-            BRBTable.getColumnModel().getColumn(6).setMaxWidth(135);
+            BRBTable.getColumnModel().getColumn(4).setPreferredWidth(45);
+            BRBTable.getColumnModel().getColumn(5).setMinWidth(135);
+            BRBTable.getColumnModel().getColumn(5).setPreferredWidth(135);
+            BRBTable.getColumnModel().getColumn(5).setMaxWidth(135);
         }
 
         BorrowReturn.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 279, 719, 503));
@@ -720,9 +845,11 @@ public class HomePage extends javax.swing.JFrame {
         System.out.println(toBeAddedMU);
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
+    private void BorrowBtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BorrowBtActionPerformed
+        AddBorrows obj = new AddBorrows(this);
+        obj.show();
+        System.out.println(toBeAddedBRB);
+    }//GEN-LAST:event_BorrowBtActionPerformed
 
     private void MBAddbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBAddbookActionPerformed
         AddBooks obj = new AddBooks(this);
@@ -751,6 +878,41 @@ public class HomePage extends javax.swing.JFrame {
 
         Utility.mapToMUTable(filteredBooks, MUTable);
     }//GEN-LAST:event_MUSearchActionPerformed
+
+    private void BRBSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BRBSearchActionPerformed
+        String lowerCaseQuery = BRBSearch.getText().toLowerCase();
+
+        List<Map<String, Object>> filteredBorrows = borrowsList.stream()
+            .filter(record -> {
+                String bookName = booksList.stream()
+                        .filter(book -> book.get("book_id").equals(record.get("book_id")))
+                        .map(book -> (String) book.get("title"))
+                        .findFirst()
+                        .orElse("");
+
+                String userName = usersList.stream()
+                        .filter(user -> user.get("users_id").equals(record.get("users_id")))
+                        .map(user -> (String) user.get("username"))
+                        .findFirst()
+                        .orElse("");
+
+                
+                String recordId = String.valueOf(record.get("record_id"));
+                String dueDate = record.get("due_date") != null ? record.get("due_date").toString() : "";
+                String returnDate = record.get("return_date") != null ? record.get("return_date").toString() : "";
+
+                
+                return recordId.toLowerCase().contains(lowerCaseQuery) ||
+                       bookName.toLowerCase().contains(lowerCaseQuery) ||
+                       userName.toLowerCase().contains(lowerCaseQuery) ||
+                       dueDate.toLowerCase().contains(lowerCaseQuery) ||
+                       returnDate.toLowerCase().contains(lowerCaseQuery);
+            })
+            .toList();
+
+    
+        Utility.mapToBRBTable(filteredBorrows, usersList, booksList, BRBTable);
+    }//GEN-LAST:event_BRBSearchActionPerformed
     
     public void refreshMBTable() {
         DefaultTableModel model = (DefaultTableModel) MBTable.getModel();
@@ -806,6 +968,33 @@ public class HomePage extends javax.swing.JFrame {
         }  
     }
     
+    public void refreshBRBTable() {
+        DefaultTableModel model = (DefaultTableModel) BRBTable.getModel();
+        model.setRowCount(0);
+        for (Map<String, Object>user : toBeAddedBRB) {
+            if (borrowsList.contains(user))
+                continue;
+            borrowsList.add(user);
+        }
+        Utility.mapToBRBTable(borrowsList, usersList, booksList, BRBTable);   
+    }
+    
+    public void updateBRBTable() {
+        if (!toBeUpdatedBRB.isEmpty()) {
+        Map<String, Object> book = toBeUpdatedBRB.get(toBeUpdatedBRB.size() - 1);
+
+        for (int i = 0; i < borrowsList.size(); i++) {
+            Map<String, Object> booktemp = borrowsList.get(i);
+            if (booktemp.get("users_id").equals(book.get("users_id"))) {
+                borrowsList.remove(i);
+                break; 
+            }
+        }
+        borrowsList.add(book);
+        Utility.mapToBRBTable(borrowsList, usersList, booksList, BRBTable);   
+        }  
+    }
+    
     private void theader(){
         JTableHeader MBHead = MBTable.getTableHeader();
         JTableHeader MUHead = MUTable.getTableHeader();
@@ -827,14 +1016,175 @@ public class HomePage extends javax.swing.JFrame {
         
     }  
     
-    private static void processPendingData() {
-        System.out.println("Processing pending data...");
-        for (Map<String, Object> book : toBeAddedMB) {
-            System.out.println("Saving book: " + book);
-            // Example: Save to database or file
+    public static void processPendingData(Queue<String> tracker) {
+        while (!tracker.isEmpty()) {
+            String operation = tracker.poll();
+
+            try (Connection connection = ConnectionDB.getConnection()) {
+                switch (operation) {
+                    case "addMB":
+                        if (!toBeAddedMB.isEmpty()) {
+                            Map<String, Object> book = toBeAddedMB.get(0);
+                            String query = "INSERT INTO books (title, author, genre, isbn, total_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?)";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setString(1, (String) book.get("title"));
+                                stmt.setString(2, (String) book.get("author"));
+                                stmt.setString(3, (String) book.get("genre"));
+                                stmt.setString(4, (String) book.get("isbn"));
+                                stmt.setInt(5, (int) book.get("total_copies"));
+                                stmt.setInt(6, (int) book.get("available_copies"));
+                                stmt.executeUpdate();
+                            }
+                            toBeAddedMB.remove(0); 
+                        }
+                        break;
+
+                    case "delMB": 
+                        if (!toBeDeletedMB.isEmpty()) {
+                            Map<String, Object> book = toBeDeletedMB.get(0); 
+                            String query = "DELETE FROM books WHERE book_id = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setInt(1, (int) book.get("book_id"));
+                                stmt.executeUpdate();
+                            }
+                            toBeDeletedMB.remove(0);
+                        }
+                        break;
+
+                    case "updateMB":
+                        if (!toBeUpdatedMB.isEmpty()) {
+                            Map<String, Object> book = toBeUpdatedMB.get(0);
+                            String query = "UPDATE books SET title = ?, author = ?, genre = ?, isbn = ?, total_copies = ?, available_copies = ? WHERE book_id = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setString(1, (String) book.get("title"));
+                                stmt.setString(2, (String) book.get("author"));
+                                stmt.setString(3, (String) book.get("genre"));
+                                stmt.setString(4, (String) book.get("isbn"));
+                                stmt.setInt(5, (int) book.get("total_copies"));
+                                stmt.setInt(6, (int) book.get("available_copies"));
+                                stmt.setInt(7, (int) book.get("book_id"));
+                                stmt.executeUpdate();
+                            }
+                            toBeUpdatedMB.remove(0);
+                        }
+                        break;
+
+                    case "addMU":
+                        if (!toBeAddedMU.isEmpty()) {
+                            Map<String, Object> user = toBeAddedMU.get(0);
+                            String query = "INSERT INTO users (username, email, phone, join_date) VALUES (?, ?, ?, ?)";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setString(1, (String) user.get("username"));
+                                stmt.setString(2, (String) user.get("email"));
+                                stmt.setString(3, (String) user.get("phone"));
+                                java.sql.Date joinDate = (java.sql.Date) user.get("join_date");
+                                stmt.setDate(4, joinDate);
+                                stmt.executeUpdate();
+                            }
+                            toBeAddedMU.remove(0);
+                        }
+                        break;
+
+                    case "addBRB": 
+                        if (!toBeAddedBRB.isEmpty()) {
+                            Map<String, Object> borrow = toBeAddedBRB.get(0);
+                            String query = "INSERT INTO borrow_records (users_id, book_id, borrow_date, due_date, return_date, fine) VALUES (?, ?, ?, ?, ?, ?)";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setInt(1, (int) borrow.get("users_id"));
+                                stmt.setInt(2, (int) borrow.get("book_id"));
+                                stmt.setDate(3, (java.sql.Date) borrow.get("borrow_date"));
+                                stmt.setDate(4, (java.sql.Date) borrow.get("due_date"));
+                                stmt.setDate(5, (java.sql.Date) borrow.get("return_date"));
+                                stmt.setDouble(6, (double) borrow.get("fine"));
+                                stmt.executeUpdate();
+                            }
+                            toBeAddedBRB.remove(0); 
+                        }
+                        break;
+                    
+                    case "delMU": 
+                        if (!toBeDeletedMU.isEmpty()) {
+                            Map<String, Object> user = toBeDeletedMU.get(0);
+                            String query = "DELETE FROM books WHERE book_id = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setInt(1, (int) user.get("users_id"));
+                                stmt.executeUpdate();
+                            }
+                            toBeDeletedMU.remove(0); 
+                        }
+                        break;
+                        
+                    case "delBRB": 
+                        if (!toBeDeletedBRB.isEmpty()) {
+                            Map<String, Object> user = toBeDeletedBRB.get(0);
+                            String query = "DELETE FROM borrow_records WHERE record_id = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setInt(1, (int) user.get("record_id"));
+                                stmt.executeUpdate();
+                            }
+                            toBeDeletedBRB.remove(0); 
+                        }
+                        break;  
+                        
+                    case "updateMU": 
+                        if (!toBeUpdatedMU.isEmpty()) { 
+                            Map<String, Object> user = toBeUpdatedMU.get(0);
+                            String query = "UPDATE users SET external_id = ?, username = ?, email = ?, phone = ?, join_date = ? WHERE users_id = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setString(1, (String) user.get("external_id"));
+                                stmt.setString(2, (String) user.get("username"));
+                                stmt.setString(3, (String) user.get("email"));
+                                stmt.setString(4, (String) user.get("phone"));
+                                stmt.setDate(5, (java.sql.Date) user.get("join_date"));
+                                stmt.setInt(6, (int) user.get("users_id")); 
+                                stmt.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Error updating user: " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                            toBeUpdatedMU.remove(0);
+                        }
+                        break;
+
+                    case "updateBRB":
+                        if (!toBeUpdatedBRB.isEmpty()) { 
+                            Map<String, Object> borrow = toBeUpdatedBRB.get(0);
+                            String query = "UPDATE borrow_records SET users_id = ?, book_id = ?, borrow_date = ?, due_date = ?, return_date = ?, fine = ? WHERE record_id = ?";
+                            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                                stmt.setInt(1, (int) borrow.get("users_id"));
+                                stmt.setInt(2, (int) borrow.get("book_id"));
+                                stmt.setDate(3, (java.sql.Date) borrow.get("borrow_date"));
+                                stmt.setDate(4, (java.sql.Date) borrow.get("due_date"));
+                                stmt.setDate(5, (java.sql.Date) borrow.get("return_date"));
+                                Object fineObj = borrow.get("fine");
+                                if (fineObj instanceof BigDecimal) {
+                                    stmt.setDouble(6, ((BigDecimal) fineObj).doubleValue());
+                                } else if (fineObj instanceof Double) {
+                                    stmt.setDouble(6, (Double) fineObj);
+                                } else {
+                                    stmt.setDouble(6, 0.0);
+                                }
+                                stmt.setInt(7, (int) borrow.get("record_id"));
+                                stmt.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Error updating borrow record: " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                            toBeUpdatedBRB.remove(0);
+                        }
+                        break;
+    
+                        
+                    default:
+                        System.out.println("Unknown operation: " + operation);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error processing operation: " + operation);
+                e.printStackTrace();
+            }
         }
-        System.out.println("All pending data processed.");
-    }
+}
+
     /**
      * @param args the command line arguments
      */
@@ -874,7 +1224,9 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField BRBSearch;
     private javax.swing.JTable BRBTable;
+    private javax.swing.JButton BorrowBt;
     private javax.swing.JPanel BorrowReturn;
     private javax.swing.JButton MBAddbook;
     private javax.swing.JTextField MBSearch;
@@ -887,7 +1239,6 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel btn_B;
     private javax.swing.JPanel btn_Home;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -908,6 +1259,5 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 }

@@ -12,17 +12,20 @@ Home\HomePage$8.class
 Utility\TableActionCellEditor.class
 Utility\NewJPanel$1.class
 login\SignUp$4.class
+Home\HomePage$16.class
 Home\onEditMB.class
 login\LoginPage.class
 Home\HomePage$5.class
 Home\AddBooks$2.class
 Home\HomePage$2.class
+Home\AddBorrows.class
 Home\onEditMB$1.class
 Home\HomePage$9.class
 Home\onEditMU$2.class
 login\LoginPage$4.class
 Home\AddUsers$2.class
 login\SignUp$1.class
+Home\AddBorrows$1.class
 Home\HomePage$13.class
 Home\HomePage$6.class
 login\SignUp.class
@@ -49,7 +52,6 @@ login\Login.class
 test\NewJFrame.class
 Utility\NewJPanel$3.class
 Home\onEditMB$2.class
-login\SignUp$6.class
 test\NewJFrame$3.class
 Utility\NewJPanel.class
 Home\HomePage$4.class
@@ -57,4 +59,5 @@ Home\HomePage$15.class
 login\LoginPage$2.class
 login\SignUp$3.class
 Utility\NewJPanel$2.class
+Home\AddBorrows$2.class
 Home\HomePage$1.class

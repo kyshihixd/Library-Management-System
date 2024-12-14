@@ -22,6 +22,7 @@ public class onEditMU extends javax.swing.JFrame {
         initComponents();
         this.homePage = homePage;
         this.user = user;
+        this.setLocationRelativeTo(null);
         jTextField1.setText(user.get("external_id").toString());
         jTextField2.setText(user.get("username").toString());
         jTextField3.setText(user.get("email").toString());
@@ -145,26 +146,24 @@ public class onEditMU extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-        // Retrieve updated values from the text fields
         user.put("external_id", jTextField1.getText().trim());
         user.put("username", jTextField2.getText().trim());
         user.put("email", jTextField3.getText().trim());
         user.put("phone", jTextField4.getText().trim());
         user.put("join_date", jTextField5.getText().trim());
 
-        // Add the updated book to toBeUpdatedMB for tracking
+        
         if (!HomePage.toBeUpdatedMU.contains(user)) {
             HomePage.toBeUpdatedMU.add(user);
+            HomePage.tracker.add("updateMU");
         }
 
-        // Refresh the table in HomePage
         homePage.updateMUTable();
 
-        // Close the edit frame
         dispose();
     } catch (NumberFormatException ex) {
         JOptionPane.showMessageDialog(this, "Invalid number format for copies.", "Error", JOptionPane.ERROR_MESSAGE);
-    }        // TODO add your handling code here:
+    }        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

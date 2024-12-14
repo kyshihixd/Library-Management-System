@@ -4,6 +4,7 @@
  */
 package Home;
 
+import static Home.HomePage.tracker;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class AddUsers extends javax.swing.JFrame {
         this.homePage = homePage;
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Add Users");
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -53,11 +55,11 @@ public class AddUsers extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Enter Users: External_ID, Username, Email, Phone Number, Join Date");
+        jLabel1.setText("Enter Users: External_ID, Username, Email, Phone Number");
 
-        jLabel2.setText("EX: itcsiu22300, Dinh Bao Anh, cs22300@gmail.com, 0932190944, 12/12/2024 ");
+        jLabel2.setText("EX: itcsiu22300, Dinh Bao Anh, cs22300@gmail.com, 0932190944 ");
 
-        jLabel4.setText("      OOP, M.June, Eduction, 9780321413454, 4,4");
+        jLabel4.setText("      itcsiu22300, Dinh Bao Anh, cs22300@gmail.com, 0932190944 ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -107,7 +109,7 @@ public class AddUsers extends javax.swing.JFrame {
             String[] books = bookInput.split("\n");
             for (String string : books){
                 String[] bookDetails = string.split(",");
-                if (bookDetails.length == 5) {
+                if (bookDetails.length == 4) {
                     try {
                         Map<String, Object> book = new HashMap<>();
                         int nextId = homePage.usersList.stream().mapToInt(b -> (int) b.get("users_id")).max().orElse(0) + 1;
@@ -116,11 +118,11 @@ public class AddUsers extends javax.swing.JFrame {
                         book.put("username", bookDetails[1].trim());
                         book.put("email", bookDetails[2].trim());
                         book.put("phone", bookDetails[3].trim());
-                        book.put("join_date", bookDetails[4].trim());
+                        book.put("join_date", new java.sql.Date(System.currentTimeMillis()));
 
                         System.out.println("User added to toBeAddedMU list: " + book);
                         HomePage.toBeAddedMU.add(book);
-                        // Clear the text area for the next input
+                        HomePage.tracker.add("addMU");
                         jTextArea1.setText("");
                     } catch (NumberFormatException e) {
                         System.out.println("Error: Invalid number format in input.");
@@ -134,7 +136,7 @@ public class AddUsers extends javax.swing.JFrame {
                     System.out.println("Error: Incorrect input format.");
                     javax.swing.JOptionPane.showMessageDialog(
                         this,
-                        "Please input book details in the correct format: Title, Author, Genre, ISBN, Total Copies, Available Copies",
+                        "Please input book details in the correct format: external_id, username, email, phone, join_date",
                         "Input Error",
                         javax.swing.JOptionPane.ERROR_MESSAGE);
                 }

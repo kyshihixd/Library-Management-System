@@ -43,8 +43,8 @@ ALTER TABLE books AUTO_INCREMENT =  1;
 ALTER TABLE borrow_records AUTO_INCREMENT =  1;
 
 UPDATE books
-SET book_id = book_id - 1
-WHERE book_id > 2;
+SET available_copies = available_copies - 1
+WHERE book_id = 1;
 
 INSERT INTO books (title, author, genre, isbn, total_copies, available_copies) VALUES
 ( 'The Catcher in the Rye', 'J.D. Salinger', 'Fiction', '9780316769488', 5, 5),
@@ -88,6 +88,15 @@ INSERT INTO users (external_id, username, email, phone) VALUES
 INSERT INTO borrow_records (users_id, book_id, due_date)
 VALUES (4, 8, '2025-11-15');
 
+INSERT INTO borrow_records (users_id, book_id, due_date)
+VALUES (3, 13, '2025-09-15');
+
+INSERT INTO borrow_records (users_id, book_id, due_date)
+VALUES (7, 15, '2025-11-2');
+
+INSERT INTO borrow_records (users_id, book_id, due_date)
+VALUES (6, 17, '2025-3-15');
+
 UPDATE borrow_records
 SET return_date = '2024-12-12'
 WHERE record_id = 1;
@@ -99,10 +108,12 @@ WHERE record_id = 1;
 SELECT * FROM books;
 SELECT * FROM borrow_records;
 
-DROP TRIGGER IF EXISTS after_return_update;
+DROP TRIGGER IF EXISTS before_return_update;
 DROP procedure if EXISTS update_fine;
 
-TRUNCATE TABLE borrow_records;
+SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 1;
+TRUNCATE TABLE books;
 TRUNCATE TABLE borrow_records;
 
 DELIMITER $$

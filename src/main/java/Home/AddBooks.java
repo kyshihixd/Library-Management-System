@@ -4,6 +4,7 @@
  */
 package Home;
 
+import static Home.HomePage.tracker;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.*;
@@ -28,6 +29,7 @@ public class AddBooks extends javax.swing.JFrame {
         this.homePage = homePage;
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Add Books");
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -141,6 +143,7 @@ public class AddBooks extends javax.swing.JFrame {
 
                     System.out.println("Book added to toBeAdded list: " + book);
                     HomePage.toBeAddedMB.add(book);
+                    HomePage.tracker.add("addMB");
                     // Clear the text area for the next input
                     jTextArea1.setText("");
                 } catch (NumberFormatException e) {

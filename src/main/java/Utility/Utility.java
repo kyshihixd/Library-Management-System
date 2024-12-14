@@ -170,7 +170,7 @@ public class Utility {
     }
     
     public static List<Map<String, Object>> BorrowsToTableList(){
-        String query = "SELECT * FROM borrows_records";
+        String query = "SELECT * FROM borrow_records";
         List<Map<String, Object>> booksList = new ArrayList<>();
 
         try (Connection connection = ConnectionDB.getConnection();
@@ -195,10 +195,10 @@ public class Utility {
             e.printStackTrace();
             System.out.println("Error connecting to the database or executing the query.");
         }
-        
         return booksList;
     }
             
+    
             
     public static void mapToMBTable(List<Map<String, Object>> map, JTable table){
         if (map == null || map.isEmpty()) {
@@ -241,6 +241,45 @@ public class Utility {
             rowData[1] = row.get("username");
             rowData[2] = row.get("phone");
             rowData[3] = row.get("join_date");
+            tableModel.addRow(rowData);
+        }
+    }
+    
+    public static void mapToBRBTable(List<Map<String, Object>> map,List<Map<String, Object>> users,List<Map<String, Object>> books, JTable table){
+        if (map == null || map.isEmpty()) {
+        System.out.println("No data to display in the table.");
+        return;
+        }
+
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        tableModel.setRowCount(0);
+
+        int col = tableModel.getColumnCount();
+
+        for (Map<String, Object> row : map) {
+            Object bookId = row.get("book_id");
+            Object userId = row.get("users_id");
+
+            String bookName = books.stream()
+                    .filter(book -> book.get("book_id").equals(bookId))
+                    .map(book -> (String) book.get("title"))
+                    .findFirst()
+                    .orElse("Unknown Book");
+
+            String userName = users.stream()
+                    .filter(user -> user.get("users_id").equals(userId))
+                    .map(user -> (String) user.get("username"))
+                    .findFirst()
+                    .orElse("Unknown User");
+
+            Object[] rowData = new Object[col];
+            rowData[0] = row.get("record_id");
+            rowData[1] = userName;
+            rowData[2] = bookName;
+            rowData[3] = row.get("due_date");
+            rowData[4] = row.get("return_date");
+
+            // Add row to table
             tableModel.addRow(rowData);
         }
     }
