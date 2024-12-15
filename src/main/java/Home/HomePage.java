@@ -76,6 +76,17 @@ public class HomePage extends javax.swing.JFrame {
                 Object id = Utility.getIdFromTableRow(MBTable, row);
                 Map<String, Object> selectedBook = Utility.getDataFromID(id, "book_id", booksList);
                 
+                boolean isInBorrow = borrowsList.stream()
+                .anyMatch(borrow -> borrow.get("book_id").equals(selectedBook.get("book_id")));
+                 if (isInBorrow) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Cannot edit the book. It is currently referenced in borrow records.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+                    return;}
+                
                 if (selectedBook != null) {
                     new onEditMB(HomePage.this, selectedBook).setVisible(true);
                 } else {
@@ -90,6 +101,18 @@ public class HomePage extends javax.swing.JFrame {
                 }
                 Object id = Utility.getIdFromTableRow(MBTable, row);
                 Map<String, Object> selectedBook = Utility.getDataFromID(id, "book_id", booksList);
+                
+                boolean isInBorrow = borrowsList.stream()
+                .anyMatch(borrow -> borrow.get("book_id").equals(selectedBook.get("book_id")));
+                 if (isInBorrow) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Cannot edit the book. It is currently referenced in borrow records.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+                    return;}
+                
                 booksList.remove(selectedBook);
                 toBeDeletedMB.add(selectedBook);
                 tracker.add("delMB");
@@ -143,6 +166,17 @@ public class HomePage extends javax.swing.JFrame {
                 Object id = Utility.getIdFromTableRow(MUTable, row);
                 Map<String, Object> selectedUser = Utility.getDataFromID(id, "users_id", usersList);
                 
+                boolean isInBorrow = borrowsList.stream()
+                .anyMatch(borrow -> borrow.get("users_id").equals(selectedUser.get("users_id")));
+                 if (isInBorrow) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Cannot edit the book. It is currently referenced in borrow records.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+                    return;}
+                
                 if (selectedUser != null) {
                     new onEditMU(HomePage.this, selectedUser).setVisible(true);
                 } else {
@@ -157,6 +191,18 @@ public class HomePage extends javax.swing.JFrame {
                 }
                 Object id = Utility.getIdFromTableRow(MUTable, row);
                 Map<String, Object> selectedBook = Utility.getDataFromID(id, "users_id", usersList);
+                
+                boolean isInBorrow = borrowsList.stream()
+                .anyMatch(borrow -> borrow.get("users_id").equals(selectedBook.get("users_id")));
+                 if (isInBorrow) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Cannot edit the book. It is currently referenced in borrow records.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+                    return;}
+                
                 usersList.remove(selectedBook);
                 toBeDeletedMU.add(selectedBook);
                 tracker.add("delMU");

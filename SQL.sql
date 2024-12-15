@@ -30,13 +30,10 @@ CREATE TABLE borrow_records (
     fine DECIMAL(10, 2) DEFAULT 0.00          -- Fine for overdue books
 );
 
-CREATE TABLE waitlist (
-    waitlist_id INT AUTO_INCREMENT PRIMARY KEY,  -- Unique waitlist entry ID
-    book_id INT NOT NULL,                        -- Book for which the waitlist exists
-    users_id INT NOT NULL,                        -- User waiting for the book
-    request_date DATE DEFAULT (current_date()),         -- Date the user requested the book
-    FOREIGN KEY (book_id) REFERENCES books(book_id),
-    FOREIGN KEY (users_id) REFERENCES users(users_id)
+CREATE TABLE admin (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,   -- Unique ID for each credential
+    email VARCHAR(255) UNIQUE NOT NULL,            -- User's email address (must be unique)
+    passw VARCHAR(255) NOT NULL           -- Hashed password
 );
 
 ALTER TABLE books AUTO_INCREMENT =  1;
