@@ -1,4 +1,4 @@
-#📚 Library Management System
+# 📚 Library Management System
 A Java-based Library Management System developed as a final project for the Data Structures and Algorithms course.
 
 #🔍 Overview
