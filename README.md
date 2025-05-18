@@ -54,7 +54,7 @@ DefaultTableModel – binds backend data to frontend tables dynamically
 
 Java Streams & higher-order functions – enable efficient filtering, mapping, and searching
 
-#🗃️ Database Schema
+# 🗃️ Database Schema
 Books Table – title, author, genre, ISBN, available copies
 
 Users Table – user details and membership info
