@@ -1,12 +1,12 @@
-📚 Library Management System
-A Java-based Library Management System developed as a final project for the Data Structures and Algorithms course at Vietnam National University – HCM City, International University.
+#📚 Library Management System
+A Java-based Library Management System developed as a final project for the Data Structures and Algorithms course.
 
-🔍 Overview
+#🔍 Overview
 This system is designed to automate common library tasks such as managing books, users, and borrow/return records. The application uses a Java Swing GUI for the frontend and MySQL for backend data persistence.
 
 It is built to demonstrate core data structure and algorithm concepts while being practical and user-friendly.
 
-🎯 Objectives
+#🎯 Objectives
 Build a responsive desktop interface for library administrators.
 
 Handle book, user, and borrow record management with real-time updates.
